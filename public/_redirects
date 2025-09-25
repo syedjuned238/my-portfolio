@@ -1,0 +1,13 @@
+/*    /index.html   200
+
+# Redirect common variations to main domain
+www.junedsyed.dev/* https://junedsyed.dev/:splat 301!
+syedjuned.dev/* https://junedsyed.dev/:splat 301!
+www.syedjuned.dev/* https://junedsyed.dev/:splat 301!
+
+# Security headers
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin

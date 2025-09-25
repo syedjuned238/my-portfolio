@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://junedsyed.dev/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1
+
+# Preferred crawl schedule
+# Best time to crawl: 2-6 AM IST
