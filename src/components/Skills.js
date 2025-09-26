@@ -89,19 +89,32 @@ const Skills = () => {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+          }
+        });
       },
-      { threshold: 0.3 }
+      { 
+        threshold: 0.2,
+        rootMargin: '50px'
+      }
     );
 
     if (skillsRef.current) {
       observer.observe(skillsRef.current);
     }
 
-    return () => observer.disconnect();
+    // Fallback: Set visible after 3 seconds if intersection observer doesn't trigger
+    const fallbackTimer = setTimeout(() => {
+      setIsVisible(true);
+    }, 3000);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(fallbackTimer);
+    };
   }, []);
 
   const containerVariants = {
@@ -109,19 +122,20 @@ const Skills = () => {
     visible: {
       opacity: 1,
       transition: {
-        delayChildren: 0.3,
-        staggerChildren: 0.1
+        delayChildren: 0.2,
+        staggerChildren: 0.15
       }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 30, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.6
+        duration: 0.6,
+        ease: "easeOut"
       }
     }
   };
@@ -129,21 +143,36 @@ const Skills = () => {
   const SkillBar = ({ skill, index, categoryColor }) => {
     return (
       <motion.div
-        initial={{ opacity: 0, x: -50 }}
+        initial={{ opacity: 0, x: -40 }}
         animate={isVisible ? { opacity: 1, x: 0 } : {}}
-        transition={{ delay: index * 0.1, duration: 0.6 }}
+        transition={{ 
+          delay: index * 0.1, 
+          duration: 0.5,
+          ease: "easeOut"
+        }}
         className="mb-6"
       >
         <div className="flex justify-between items-center mb-2">
           <span className="font-semibold text-white">{skill.name}</span>
-          <span className="text-blue-400 font-bold">{skill.level}%</span>
+          <motion.span 
+            className="text-blue-400 font-bold"
+            initial={{ opacity: 0 }}
+            animate={isVisible ? { opacity: 1 } : {}}
+            transition={{ delay: index * 0.1 + 0.8 }}
+          >
+            {skill.level}%
+          </motion.span>
         </div>
         <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
           <motion.div
-            className={`h-full bg-gradient-to-r ${categoryColor} rounded-full relative skill-bar`}
-            initial={{ width: 0 }}
-            animate={isVisible ? { width: `${skill.level}%` } : {}}
-            transition={{ delay: index * 0.1 + 0.5, duration: 1.5, ease: "easeOut" }}
+            className={`h-full bg-gradient-to-r ${categoryColor} rounded-full skill-progress-bar`}
+            initial={{ width: "0%" }}
+            animate={isVisible ? { width: `${skill.level}%` } : { width: "0%" }}
+            transition={{ 
+              delay: index * 0.1 + 0.5, 
+              duration: 1.5, 
+              ease: [0.25, 0.46, 0.45, 0.94]
+            }}
           />
         </div>
       </motion.div>
@@ -177,7 +206,7 @@ const Skills = () => {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {skillCategories.map((category, categoryIndex) => (

@@ -13,7 +13,7 @@ import Footer from './components/Footer';
 function App() {
   useEffect(() => {
     // Set document title
-    document.title = 'Syed Juned - Full Stack Developer | Portfolio';
+    document.title = 'Juned - Full Stack Developer | Portfolio';
     
     // Update meta description
     const metaDescription = document.querySelector('meta[name="description"]');

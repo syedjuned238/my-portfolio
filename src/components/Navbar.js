@@ -5,13 +5,37 @@ import { Menu, X, Github, Linkedin, Mail } from 'lucide-react';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 50);
+          
+          // Get all sections
+          const sections = ['home', 'about', 'experience', 'projects', 'skills', 'education', 'contact'];
+          const scrollPosition = window.scrollY + 100; // Offset for better detection
+          
+          // Find which section is currently in view
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const section = document.getElementById(sections[i]);
+            if (section && section.offsetTop <= scrollPosition) {
+              setActiveSection(sections[i]);
+              break;
+            }
+          }
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Call once to set initial state
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -50,26 +74,49 @@ const Navbar = () => {
             className="flex-shrink-0"
           >
             <a href="#home" className="text-2xl font-bold gradient-text">
-              Syed Juned
+              Portfolio
             </a>
           </motion.div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              {navItems.map((item, index) => (
-                <motion.a
-                  key={item.name}
-                  href={item.href}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 hover:bg-white/5"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </motion.a>
-              ))}
+              {navItems.map((item, index) => {
+                const sectionId = item.href.substring(1); // Remove # from href
+                const isActive = activeSection === sectionId;
+                
+                return (
+                  <motion.a
+                    key={item.name}
+                    href={item.href}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * index }}
+                    className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
+                      isActive 
+                        ? 'text-blue-400 bg-blue-400/10' 
+                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    }`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsOpen(false);
+                      const element = document.getElementById(sectionId);
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                  >
+                    {item.name}
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeIndicator"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400 rounded-full"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </motion.a>
+                );
+              })}
             </div>
           </div>
 
@@ -112,16 +159,32 @@ const Navbar = () => {
         className="md:hidden overflow-hidden bg-dark-900/95 backdrop-blur-md border-t border-gray-700/50"
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          {navItems.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 hover:bg-white/5"
-              onClick={() => setIsOpen(false)}
-            >
-              {item.name}
-            </a>
-          ))}
+          {navItems.map((item) => {
+            const sectionId = item.href.substring(1);
+            const isActive = activeSection === sectionId;
+            
+            return (
+              <a
+                key={item.name}
+                href={item.href}
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
+                  isActive 
+                    ? 'text-blue-400 bg-blue-400/10 border-l-2 border-blue-400' 
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsOpen(false);
+                  const element = document.getElementById(sectionId);
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+              >
+                {item.name}
+              </a>
+            );
+          })}
           
           {/* Mobile Social Links */}
           <div className="flex items-center space-x-4 px-3 py-4">

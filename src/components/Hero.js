@@ -69,7 +69,7 @@ const Hero = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="text-center z-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
+        className="text-center z-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto pt-20 lg:pt-24"
       >
         <motion.div
           variants={itemVariants}
@@ -93,7 +93,7 @@ const Hero = () => {
           className="text-xl sm:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
         >
           Passionate Software Engineer with <span className="text-blue-400 font-semibold">2+ years</span> of experience 
-          crafting scalable web applications using React, NestJS, Angular, and modern technologies at Divami Design & AI-Led Product Engineering.
+          building scalable enterprise solutions and open-source frameworks using React, NestJS, Angular, and cutting-edge technologies.
         </motion.p>
 
         <motion.div
